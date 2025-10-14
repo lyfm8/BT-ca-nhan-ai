@@ -170,18 +170,43 @@ def ucs_rooks():
     return None
 
 def dls_rooks(limit=8):
+    log_message(f"=== Bắt đầu DLS (limit={limit}) ===")
+    step = {"count": 0}
+
     def dls(state, depth):
+        step["count"] += 1
+        log_message(f"[Bước {step['count']}] Mở rộng trạng thái (độ sâu {depth}): {state}")
+
         if len(state) == n:
+            log_message(f"🎯 Tìm thấy nghiệm cuối cùng: {state} (bước {step['count']})")
             return state
+
         if depth == limit:
+            log_message(f"    ✋ Đạt giới hạn depth {limit}, quay lui từ {state}")
             return None
-        for c in range(n):
+
+        cols = list(range(n))
+        random.shuffle(cols)
+        expanded = 0
+
+        for c in cols:
             if c not in state:
-                res = dls(state + [c], depth + 1)
+                new_state = state + [c]
+                expanded += 1
+                log_message(f"    ➜ Thêm node con: {new_state}")
+                res = dls(new_state, depth + 1)
                 if res:
                     return res
+
+        if expanded == 0:
+            log_message(f"    (Không có node con hợp lệ cho {state})")
         return None
-    return dls([], 0)
+
+    result = dls([], 0)
+    if result is None:
+        log_message("❌ DLS kết thúc: không tìm thấy nghiệm")
+    return result
+
 
 def check_goal_state(state):
     # an toàn: nếu goal chưa đầy thì không match
@@ -195,47 +220,99 @@ def check_goal_state(state):
     return True
 
 def id_dfs_rooks(limit):
+    log_message(f"🔹 Bắt đầu ID-DFS cấp độ depth limit = {limit}")
     stack = deque([[]])
+    step = 0
+
     while stack:
         state = stack.pop()
+        step += 1
+        log_message(f"[Bước {step}] Mở rộng trạng thái (độ sâu {len(state)}): {state}")
+
         if len(state) == n:
             if check_goal_state(state):
+                log_message(f"🎯 Tìm thấy nghiệm tại depth {len(state)}: {state}")
                 return state
+            else:
+                log_message(f"✖️ Trạng thái {state} không phải nghiệm, bỏ qua")
             continue
+
         if len(state) < limit:
-            for col in range(n):
+            cols = list(range(n))
+            random.shuffle(cols)
+            expanded = 0
+            for col in cols:
                 if col not in state:
-                    stack.append(state + [col])
+                    new_state = state + [col]
+                    stack.append(new_state)
+                    expanded += 1
+                    log_message(f"➜ Thêm node con: {new_state}")
+            if expanded == 0:
+                log_message("(Không có node con hợp lệ)")
+        else:
+            log_message(f"✋ Đạt giới hạn depth {limit}, quay lui từ {state}")
+
+    log_message(f"⚠️ Không tìm thấy nghiệm ở depth limit = {limit}")
     return None
+
 
 def id_rooks():
-    for limit in range(1, n+1):
+    log_message("=== Bắt đầu ID-DFS ===")
+    for limit in range(1, n + 1):
+        log_message(f"🔸 Thử với giới hạn depth = {limit}")
         res = id_dfs_rooks(limit)
         if res:
+            log_message(f"✅ Tìm thấy nghiệm ở giới hạn {limit}: {res}")
             return res
+        else:
+            log_message(f"⏩ Không có nghiệm ở giới hạn {limit}, tăng giới hạn lên {limit + 1}")
+    log_message("❌ ID-DFS kết thúc: không tìm thấy nghiệm")
     return None
 
+
 def greedy_search_rooks():
+    log_message("=== Bắt đầu Greedy Search ===")
     cols = list(range(n))
     state = []
+    step = 0
+
     for row in range(n):
-        # chọn c sao cho cost(state + [c]) nhỏ nhất
+        step += 1
+        log_message(f"[Bước {step}] Hàng {row}: trạng thái hiện tại {state}")
+
+        # chọn cột có cost nhỏ nhất
         best_col = min(cols, key=lambda c: cost_function(state + [c]))
+        best_cost = cost_function(state + [best_col])
+
+        log_message(f" ➜ Chọn cột {best_col} với cost = {best_cost}")
         state.append(best_col)
         cols.remove(best_col)
+
+    log_message(f"🎯 Nghiệm cuối cùng (Greedy): {state}")
     return state
 
 def a_star_search():
+    log_message("=== Bắt đầu A* Search ===")
     pq = [(0, 0, [])]  # (f, g, state)
     seen = set()
+    step = 0
+
     while pq:
         f, g, state = heapq.heappop(pq)
         tup = tuple(state)
+        step += 1
+
         if tup in seen:
             continue
         seen.add(tup)
+
+        log_message(f"[Bước {step}] Mở rộng trạng thái: {state} | f={f}, g={g}, h={f - g}")
+
         if len(state) == n:
+            log_message(f"🎯 Tìm thấy nghiệm cuối cùng: {state} (f={f}, g={g}, h={f - g})")
             return state
+
+        expanded = 0
         for col in range(n):
             if col not in state:
                 new_state = state + [col]
@@ -243,6 +320,13 @@ def a_star_search():
                 new_h = cost_function(new_state)
                 new_f = new_g + new_h
                 heapq.heappush(pq, (new_f, new_g, new_state))
+                expanded += 1
+                log_message(f" ➜ Thêm node con: {new_state} | f={new_f}, g={new_g}, h={new_h}")
+
+        if expanded == 0:
+            log_message(" (Không có node con hợp lệ)")
+
+    log_message("❌ A* kết thúc: không tìm thấy nghiệm")
     return None
 
 def get_neighbors(state):
@@ -256,26 +340,46 @@ def get_neighbors(state):
     return neighbors
 
 def hill_climbing():
+    log_message("=== Bắt đầu Hill Climbing ===")
     state = list(range(n))
     random.shuffle(state)
     cur_cost = cost_function(state)
+    step = 0
+
+    log_message(f"Khởi tạo trạng thái ban đầu: {state} | cost = {cur_cost}")
+
     while True:
+        step += 1
         neighbors = get_neighbors(state)
         if not neighbors:
+            log_message("❌ Không còn neighbor nào — dừng lại.")
             return state
-        neighbors_cost = []
-        for nb in neighbors:
-            cost = cost_function(nb)
-            neighbors_cost.append((cost, nb))
+
+        # Tính cost cho tất cả neighbor
+        neighbors_cost = [(cost_function(nb), nb) for nb in neighbors]
         best_cost, best_neighbor = min(neighbors_cost, key=lambda x: x[0])
+
+        log_message(f"[Bước {step}] Trạng thái hiện tại: {state} | cost = {cur_cost}")
+        log_message(f" ➜ Neighbor tốt nhất: {best_neighbor} | cost = {best_cost}")
+
+        # Nếu tìm được neighbor tốt hơn → leo lên
         if best_cost < cur_cost:
+            log_message("✅ Cải thiện được, cập nhật trạng thái mới.")
             state, cur_cost = best_neighbor, best_cost
         else:
+            log_message("⛔ Không tìm thấy neighbor tốt hơn — dừng tại cực trị cục bộ.")
+            log_message(f"🎯 Trạng thái cuối cùng: {state} | cost = {cur_cost}")
             return state
 
 def beam_search(k):
+    log_message(f"=== Bắt đầu Beam Search (k = {k}) ===")
     beam = [(0, [])]
+    step = 0
+
     for row in range(n):
+        step += 1
+        log_message(f"[Bước {step}] Hàng {row}: số trạng thái trong beam = {len(beam)}")
+
         candidates = []
         for cost, state in beam:
             for col in range(n):
@@ -283,15 +387,27 @@ def beam_search(k):
                     new_state = state + [col]
                     new_h = cost_function(new_state)
                     candidates.append((new_h, new_state))
+                    log_message(f"    ➜ Sinh candidate: {new_state} | cost = {new_h}")
+
         if not candidates:
+            log_message("❌ Không còn candidate hợp lệ, dừng lại.")
             break
-        # lấy k nhỏ nhất (trả tuple (cost, state))
+
+        # lấy k trạng thái có cost nhỏ nhất
         beam = heapq.nsmallest(k, candidates, key=lambda x: x[0])
-    # chọn best trong beam
+        log_message(f"✅ Giữ lại {len(beam)} trạng thái tốt nhất (top {k}):")
+        for c, s in beam:
+            log_message(f"       {s} | cost = {c}")
+
+    # chọn trạng thái tốt nhất cuối cùng trong beam
     if beam:
         best_cost, best_state = min(beam, key=lambda x: x[0])
+        log_message(f"🎯 Trạng thái cuối cùng tốt nhất: {best_state} | cost = {best_cost}")
         return best_state
+
+    log_message("❌ Beam Search kết thúc: không tìm thấy nghiệm")
     return None
+
 
 def heuristic_conflict(state):
     h=0
@@ -301,85 +417,149 @@ def heuristic_conflict(state):
                 h+=1
     return h
 
+
 def simulated_annealing(T, T_min, alpha):
+    log_message(f"=== Bắt đầu Simulated Annealing (T={T}, T_min={T_min}, alpha={alpha}) ===")
+
     state = random.choices(range(8), k=8)
+    cur_cost = heuristic_conflict(state)
+    log_message(f"🔥 Trạng thái khởi tạo: {state} | cost = {cur_cost}")
+
+    step = 0
     while T > T_min:
+        step += 1
         neighbors = state[:]
         random_pos = random.randrange(len(state))
         neighbors[random_pos] = random.randint(0, 7)
 
-        delta = heuristic_conflict(neighbors) - heuristic_conflict(state)
+        new_cost = heuristic_conflict(neighbors)
+        delta = new_cost - cur_cost
+
+        log_message(f"\n[Bước {step}] Nhiệt độ T = {T:.5f}")
+        log_message(f"    Trạng thái hiện tại: {state} | cost = {cur_cost}")
+        log_message(f"    Hàng {random_pos} đổi -> {neighbors[random_pos]}")
+        log_message(f"    Trạng thái mới: {neighbors} | cost = {new_cost}")
+        log_message(f"    Δ = {delta}")
 
         if delta <= 0:
-            state = neighbors
+            log_message("    ✅ Chấp nhận nghiệm.")
+            state, cur_cost = neighbors, new_cost
         else:
             P = math.exp(-delta / T)
-            if random.random() < P:
-                state = neighbors
+            r = random.random()
+            log_message(f"    ❌ Tệ hơn, xác suất chấp nhận = {P:.5f}, random = {r:.5f}")
+            if r < P:
+                log_message("    ⚡ Chấp nhận theo xác suất (nhảy thoát cục bộ).")
+                state, cur_cost = neighbors, new_cost
+            else:
+                log_message("    🚫 Từ chối, giữ nguyên trạng thái.")
 
         if check_goal_state(state):
+            log_message(f"🎯 Tìm thấy nghiệm hợp lệ: {state}")
             return state
+
         T *= alpha  # làm nguội
 
+    log_message("❄️ Nhiệt độ giảm dưới T_min, dừng lại.")
+    log_message(f"⚙️ Trạng thái cuối cùng: {state} | cost = {cur_cost}")
     return None
 
+
 def genetic_algorithm(population_size, max_generations):
+    log_message(f"=== Bắt đầu Genetic Algorithm (population={population_size}, generations={max_generations}) ===")
+
     population = []
     for i in range(population_size):
-        population.append(random.choices(range(8), k=8))
+        individual = random.choices(range(8), k=8)
+        population.append(individual)
+    log_message(f"🌱 Quần thể khởi tạo:")
+    for idx, p in enumerate(population):
+        log_message(f"   {idx + 1:02d}: {p} | cost = {heuristic_conflict(p)}")
 
-    for gen in range(max_generations):
+    for gen in range(1, max_generations + 1):
+        log_message(f"\n🧬 --- Thế hệ {gen} ---")
+
+        # kiểm tra nghiệm hợp lệ
         for individual in population:
             if heuristic_conflict(individual) == 0:
+                log_message(f"🎯 Tìm thấy cá thể hoàn hảo: {individual}")
                 return individual
 
         dad, mom = heapq.nsmallest(2, population, key=heuristic_conflict)
+        log_message(f"👨‍👦‍👦 Chọn bố: {dad} | cost={heuristic_conflict(dad)}")
+        log_message(f"👩‍👧‍👧 Chọn mẹ: {mom} | cost={heuristic_conflict(mom)}")
 
+        # lai ghép
         child1 = dad[0:4] + mom[4:8]
         child2 = dad[4:8] + mom[0:4]
+        log_message(f"💞 Sinh con 1: {child1} | cost={heuristic_conflict(child1)}")
+        log_message(f"💞 Sinh con 2: {child2} | cost={heuristic_conflict(child2)}")
 
-        child_best = min(child1, child2, key=heuristic_conflict)
+        # chọn con tốt nhất
+        child_best = min([child1, child2], key=heuristic_conflict)
+        log_message(f"🍼 Con tốt nhất: {child_best} | cost={heuristic_conflict(child_best)}")
 
+        # đột biến
         if random.random() < 0.1:
             pos = random.randrange(8)
+            old_val = child_best[pos]
             child_best[pos] = random.randint(0, 7)
+            log_message(f"⚡ Đột biến tại vị trí {pos}: {old_val} → {child_best[pos]}")
 
+        # tạo quần thể mới
         new_population = [child_best]
         while len(new_population) < population_size:
-            list_p = random.choices(range(8), k=8)
-            new_population.append(list_p)
-
+            random_ind = random.choices(range(8), k=8)
+            new_population.append(random_ind)
         population = new_population
 
+        best_in_gen = min(population, key=heuristic_conflict)
+        log_message(f"🏆 Cá thể tốt nhất thế hệ {gen}: {best_in_gen} | cost={heuristic_conflict(best_in_gen)}")
 
     best_state = min(population, key=heuristic_conflict)
+    log_message(f"\n⏹ Kết thúc sau {max_generations} thế hệ.")
+    log_message(f"⚙️ Cá thể tốt nhất cuối cùng: {best_state} | cost={heuristic_conflict(best_state)}")
     return best_state
 
 
-
-
-def sensorless():
+def belief_search():
+    log_message("=== Bắt đầu Belief Search ===")
     belief_states = []
 
     def search(row, col_available, current_sol):
+        log_message(f"[Bước hàng {row}] current_sol = {current_sol}")
         if row == n:
             belief_states.append(current_sol.copy())
+            log_message(f"   ✅ Tìm thấy nghiệm tạm thời: {current_sol}")
             return
 
         for col in col_available[row]:
+            log_message(f"   ➜ Thử đặt quân tại hàng {row}, cột {col}")
             new_col_available = []
             for r in range(row + 1, n):
                 allowed = [c for c in col_available[r] if c != col]
                 new_col_available.append(allowed)
+                log_message(f"      Cập nhật khả năng hàng {r}: {allowed}")
+
             search(row + 1, col_available[:row + 1] + new_col_available, current_sol + [col])
 
-    # tất cả các cột khả thi ở mỗi hàng
+    # tất cả các cột khả thi ở mỗi hàng ban đầu
     initial_col = [list(range(n)) for _ in range(n)]
-    search(0, initial_col, [])
-    # ví dụ chọn “best state” theo cột đầu tiên nhỏ nhất
-    best_state = min(belief_states, key=lambda x: x[0])
-    return best_state[0]
+    log_message(f"Khởi tạo belief state: mỗi hàng có cột khả thi {initial_col}")
 
+    search(0, initial_col, [])
+
+    log_message(f"\n🔎 Tổng số belief states tìm được: {len(belief_states)}")
+    for i, bs in enumerate(belief_states[:10]):  # chỉ in tối đa 10 cái để tránh quá dài
+        log_message(f"   {i+1:02d}: {bs}")
+
+    if not belief_states:
+        log_message("❌ Không tìm thấy trạng thái hợp lệ.")
+        return None
+
+    best_state = min(belief_states, key=lambda x: x[0])
+    log_message(f"🎯 Chọn trạng thái tốt nhất (cột đầu nhỏ nhất): {best_state}")
+    return best_state
 
 
 def is_goal(state):
@@ -402,97 +582,94 @@ def results(state, action):
     return [new_state]
 
 def and_or_search():
-    return or_search([], [])
+    log_message("=== Bắt đầu And-Or Search ===")
+    plan = or_search([], [])
+    if plan is not None:
+        log_message(f"🎯 Kế hoạch tìm được: {plan}")
+    else:
+        log_message("❌ Không tìm thấy lời giải.")
+    return plan
+
 
 def or_search(state, path):
+    log_message(f"\n🔹 OR-SEARCH: state = {state}, path = {path}")
     if is_goal(state):
+        log_message(f"✅ Đạt goal: {state}")
         return []
     if is_cycle(state, path):
+        log_message(f"🔁 Phát hiện vòng lặp: {state}, bỏ qua.")
         return None
+
     for action in actions(state):
+        log_message(f"➡️ OR-SEARCH: thử hành động {action} tại state {state}")
         plan = and_search(results(state, action), path + [state])
         if plan is not None:
+            log_message(f"✅ OR-SEARCH: thành công với hành động {action} → {plan}")
             return [action] + plan
+        else:
+            log_message(f"❌ OR-SEARCH: thất bại với hành động {action}")
     return None
 
+
 def and_search(states, path):
+    log_message(f"   🔸 AND-SEARCH: states = {states}")
     plans = []
     for s in states:
+        log_message(f"   ➜ AND-SEARCH: xử lý state con {s}")
         plan = or_search(s, path)
         if plan is None:
-            return None  # nếu 1 nhánh fail → toàn bộ fail
+            log_message(f"   ❌ AND-SEARCH: thất bại tại {s}")
+            return None  # nếu một nhánh thất bại, toàn bộ thất bại
         plans.extend(plan)
+    log_message(f"   ✅ AND-SEARCH: thành công, kế hoạch = {plans}")
     return plans
 
 
-def csp():
+
+def backtracking_fc():
+    log_message("=== Bắt đầu Backtracking với Forward Checking ===")
     solutions = []
 
     def forward_checking(row, current_sol, col_available):
+        log_message(f"[Hàng {row}] current_sol = {current_sol}")
+
         if row == n:
             solutions.append(current_sol.copy())
+            log_message(f"✅ Tìm thấy nghiệm: {current_sol}")
             return
 
         for col in col_available[row]:
-            # tạo bản sao của col_available để forward checking
+            log_message(f"   ➜ Thử đặt quân tại hàng {row}, cột {col}")
+            # tạo bản sao col_available để thực hiện forward checking
             new_col_available = []
             valid = True
-            for r in range(row+1, n):
+            for r in range(row + 1, n):
                 allowed = [c for c in col_available[r] if c != col]
                 if not allowed:
-                    valid = False  # không còn giá trị khả thi
+                    valid = False
+                    log_message(f"      ❌ Hàng {r} không còn cột khả thi sau khi đặt ({row},{col}) → backtrack")
                     break
                 new_col_available.append(allowed)
+                log_message(f"      ✔️ Cập nhật miền cột hàng {r}: {allowed}")
 
             if valid:
-                forward_checking(row+1, current_sol + [col], col_available[:row+1] + new_col_available)
+                log_message(f"   ✅ Giữ hợp lệ ({row},{col}), tiếp tục sang hàng {row+1}")
+                forward_checking(row + 1, current_sol + [col], col_available[:row + 1] + new_col_available)
+            else:
+                log_message(f"   🔙 Quay lui từ ({row},{col})")
 
-    # khởi tạo miền giá trị cho mỗi hàng
+    # khởi tạo miền giá trị
     initial_col = [list(range(n)) for _ in range(n)]
+    log_message(f"Khởi tạo miền cột cho mỗi hàng: {initial_col}")
+
     forward_checking(0, [], initial_col)
-    return solutions[0]
 
-def ac3():
-    domains = {r: set(range(n)) for r in range(n)}
-    queue = [(xi, xj) for xi in range(n) for xj in range(n) if xi != xj]
-
-    while queue:
-        xi, xj = queue.pop(0)
-        if revise(domains, xi, xj):
-            log_message(f"Revise({xi},{xj}) -> {domains[xi]}")
-            if not domains[xi]:
-                log_message("Domain rỗng -> fail")
-                return None
-            for xk in range(n):
-                if xk != xi and xk != xj:
-                    queue.append((xk, xi))
-
-    solution = []
-    used = set()
-
-    def backtrack(r):
-        if r == n:
-            return True
-        log_message(f"==> Đang xét hàng {r}, domain = {domains[r]}")
-        for c in domains[r]:
-            if c not in used:
-                log_message(f"Thử đặt xe tại ({r},{c})")
-                solution.append(c)
-                used.add(c)
-                if backtrack(r+1):
-                    return True
-                log_message(f"Backtrack: bỏ ({r},{c})")
-                solution.pop()
-                used.remove(c)
-        log_message(f"Không có lựa chọn hợp lệ cho hàng {r}, quay lui")
-        return False
-
-    if backtrack(0):
-        log_message(f"Nghiệm cuối cùng: {solution}")
-        return solution
-    else:
-        log_message("Không tìm được nghiệm hợp lệ sau AC-3")
+    if not solutions:
+        log_message("❌ Không tìm thấy nghiệm nào.")
         return None
+    else:
+        log_message(f"🎯 Nghiệm đầu tiên: {solutions[0]}")
+        return solutions[0]
 
 
 def revise(domains, xi, xj):
@@ -508,7 +685,62 @@ def revise(domains, xi, xj):
     return removed
 
 
+def ac3():
+    log_message("=== Bắt đầu AC-3 (Arc Consistency Algorithm) ===")
+    domains = {r: set(range(n)) for r in range(n)}
+    log_message(f"Miền khởi tạo cho mỗi biến (hàng): {domains}")
 
+    queue = [(xi, xj) for xi in range(n) for xj in range(n) if xi != xj]
+    log_message(f"Khởi tạo hàng đợi ràng buộc: {queue}")
+
+    # --- giai đoạn duy trì tính nhất quán cung ---
+    while queue:
+        xi, xj = queue.pop(0)
+        log_message(f"\n🔹 Xử lý cung ({xi},{xj})")
+        if revise(domains, xi, xj):
+            if not domains[xi]:
+                log_message(f"❌ Domain[{xi}] rỗng → thất bại, dừng AC-3.")
+                return None
+            # nếu có sửa domain[xi] thì thêm lại các cung (xk, xi)
+            for xk in range(n):
+                if xk != xi and xk != xj:
+                    queue.append((xk, xi))
+                    log_message(f"   🔁 Thêm lại cung ({xk},{xi}) vào hàng đợi")
+        else:
+            log_message(f"   ✅ Không cần sửa domain[{xi}]")
+
+    log_message("\n✅ Hoàn tất giai đoạn AC-3. Các domain sau khi ràng buộc:")
+    for k, v in domains.items():
+        log_message(f"   Hàng {k}: {v}")
+
+    # --- backtracking để chọn giá trị cụ thể ---
+    solution = []
+    used = set()
+
+    def backtrack(r):
+        if r == n:
+            return True
+        log_message(f"\n➡️ Đang xét hàng {r}, domain = {domains[r]}")
+        for c in sorted(domains[r]):
+            if c not in used:
+                log_message(f"   ➜ Thử đặt xe tại ({r},{c})")
+                solution.append(c)
+                used.add(c)
+                if backtrack(r + 1):
+                    return True
+                log_message(f"   🔙 Backtrack: bỏ ({r},{c})")
+                solution.pop()
+                used.remove(c)
+        log_message(f"   ❌ Không có lựa chọn hợp lệ cho hàng {r}, quay lui")
+        return False
+
+    log_message("\n=== Bắt đầu giai đoạn Backtracking sau AC-3 ===")
+    if backtrack(0):
+        log_message(f"\n🎯 Nghiệm cuối cùng: {solution}")
+        return solution
+    else:
+        log_message("❌ Không tìm được nghiệm hợp lệ sau AC-3")
+        return None
 
 ################ UI drawing ################
 
@@ -643,16 +875,16 @@ def run_selected_algo(group, algo_name):
         # Local & Optimization
         "Hill-Climbing": hill_climbing,
         "Beam Search": lambda: beam_search(k),
-        "Simulated Annealing": lambda: simulated_annealing(T=1000, T_min=1, alpha=0.99),
+        "Simulated Annealing": lambda: simulated_annealing(T=1000, T_min=1, alpha=0.90),
         "GA": lambda: genetic_algorithm(population_size=12, max_generations=1000),
 
         # CSP
-        "csp": csp,
+        "Backtracking+FC": backtracking_fc,
         "AC-3": ac3,
 
         # Planning
         "And-Or search": and_or_search,
-        "Sensorless": sensorless,
+        "Belief_search": belief_search,
     }
 
     if algo_name in algo_map:
@@ -685,8 +917,8 @@ groups = {
     "Uninformed": ["BFS", "DFS", "UCS", "DLS", "ID"],
     "Informed": ["Greedy", "A*"],
     "Local & Optimization": ["Hill-Climbing", "Simulated Annealing", "Beam Search", "GA"],
-    "CSP": ["csp", "AC-3"],
-    "Planning": ["And-Or search", "Sensorless"]
+    "CSP": ["Backtracking+FC", "AC-3"],
+    "Planning": ["And-Or search", "Belief_search"]
 }
 
 def run_selected_algo(group, algo_name):
@@ -709,12 +941,12 @@ def run_selected_algo(group, algo_name):
         "GA": lambda: genetic_algorithm(population_size=12, max_generations=1000),
 
         # CSP
-        "csp": csp,
+        "Backtracking+FC": backtracking_fc,
         "AC-3": ac3,
 
         # Planning
         "And-Or search": and_or_search,
-        "Sensorless": sensorless,
+        "Belief_search": belief_search,
     }
 
     if algo_name in algo_map:
