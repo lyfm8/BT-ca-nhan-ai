@@ -23,6 +23,7 @@ I. Nhóm thuật toán tìm kiếm không có thông tin
   - trong đó b là hệ số phân nhánh (branching factor), d là độ sâu của lời giải.
 
 -- Ứng dụng trong game đặt 8 quân xe:
+
 *Hàm bfs_rooks() thực hiện thuật toán tìm kiếm theo chiều rộng (BFS).
 
 *Cách hoạt động:
