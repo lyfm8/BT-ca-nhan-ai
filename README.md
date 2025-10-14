@@ -38,6 +38,7 @@ Khi trạng thái có đủ n quân xe (mỗi hàng một quân), thuật toán 
 Nếu hàng đợi rỗng mà chưa tìm thấy nghiệm, kết thúc với thông báo thất bại.
 
 2. Depth-First Search (DFS)
+
 ![demo-dfs](gif/dfs.gif)
 
 -- Lý  thuyết:
@@ -72,6 +73,7 @@ Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào c
 Tiếp tục cho đến khi ngăn xếp rỗng → không tìm thấy nghiệm hợp lệ.
 
 3. Uniform Cost Search (UCS)
+
 ![demo-ucs](gif/ucs.gif)
 
 -- Lý  thuyết:
@@ -100,6 +102,7 @@ Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào c
 Lặp lại cho đến khi tìm thấy nghiệm tối ưu hoặc hàng đợi rỗng.
 
 4. Depth-Limited Search (DLS)
+
 ![demo-dls](gif/dls.gif)
 
 -- Lý  thuyết:
@@ -130,6 +133,7 @@ Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào c
 Quá trình tiếp tục cho đến khi tìm được nghiệm hợp lệ hoặc toàn bộ nhánh đều bị cắt do đạt giới hạn độ sâu.
 
 5. Iterative Deepening (ID)
+
 ![demo-id](gif/id.gif)
 
 -- Lý  thuyết:
@@ -170,6 +174,7 @@ Khi có đủ n quân, kiểm tra xem có khớp với trạng thái đích (goa
 II. Nhóm thuật toán tìm kiếm có thông tin
 
 1. Greedy Best-First Search
+
 ![demo-greedy](gif/greedy.gif)
 
 -- Lý  thuyết:
@@ -200,6 +205,7 @@ Thêm vị trí được chọn vào trạng thái hiện tại (state) và lo�
 Lặp lại cho đến khi tất cả các hàng đã được đặt quân.
 
 2. A* Search
+
 ![demo-a_star](gif/a_star.gif)
 
 -- Lý  thuyết:
@@ -219,29 +225,30 @@ Lặp lại cho đến khi tất cả các hàng đã được đặt quân.
 -- Ứng dụng trong game đặt 8 quân xe - Hàm a_star_search():
 Thuật toán sử dụng hàng đợi ưu tiên (priority queue) để mở rộng các trạng thái có giá trị f = g + h nhỏ nhất trước, trong đó:
 
-g: Chi phí thực tế từ trạng thái ban đầu đến trạng thái hiện tại.
+    g: Chi phí thực tế từ trạng thái ban đầu đến trạng thái hiện tại.
 
-h: Giá trị heuristic (ước lượng chi phí còn lại đến đích), tính bằng cost_function.
+    h: Giá trị heuristic (ước lượng chi phí còn lại đến đích), tính bằng cost_function.
 
-f: Tổng chi phí ước lượng (f = g + h).
+    f: Tổng chi phí ước lượng (f = g + h).
 
 Ban đầu, thuật toán khởi tạo với trạng thái rỗng ([]) và f = 0.
 
 Ở mỗi vòng lặp:
 
-Lấy ra trạng thái có f nhỏ nhất trong hàng đợi.
+    Lấy ra trạng thái có f nhỏ nhất trong hàng đợi.
 
-Nếu trạng thái này có đủ n quân thì xem là nghiệm hoàn chỉnh và trả về.
+    Nếu trạng thái này có đủ n quân thì xem là nghiệm hoàn chỉnh và trả về.
 
-Nếu chưa đủ, thuật toán mở rộng các trạng thái con bằng cách thêm quân mới vào các cột còn trống.
+    Nếu chưa đủ, thuật toán mở rộng các trạng thái con bằng cách thêm quân mới vào các cột còn trống.
 
-Mỗi trạng thái con được tính lại f, g, h và thêm vào hàng đợi.
+    Mỗi trạng thái con được tính lại f, g, h và thêm vào hàng đợi.
 
-Các trạng thái đã được mở rộng được lưu vào tập seen để tránh lặp lại.
+    Các trạng thái đã được mở rộng được lưu vào tập seen để tránh lặp lại.
 
 III. Nhóm thuật toán tìm kiếm cục bộ
 
 1. Hill Climbing
+
 ![demo-hc](gif/hc.gif)
 
 -- Lý  thuyết:
@@ -265,15 +272,16 @@ Tính cost hiện tại (cur_cost) dựa trên hàm cost_function — giá trị
 
 Trong mỗi vòng lặp:
 
-Sinh ra tất cả các trạng thái lân cận (neighbors) bằng cách hoán đổi vị trí giữa hai quân xe (get_neighbors).
+    Sinh ra tất cả các trạng thái lân cận (neighbors) bằng cách hoán đổi vị trí giữa hai quân xe (get_neighbors).
 
-Tính cost cho từng neighbor, chọn neighbor có cost nhỏ nhất.
+    Tính cost cho từng neighbor, chọn neighbor có cost nhỏ nhất.
 
-Nếu cost của neighbor tốt hơn cost hiện tại → di chuyển lên (leo lên đồi), cập nhật trạng thái.
+    Nếu cost của neighbor tốt hơn cost hiện tại → di chuyển lên (leo lên đồi), cập nhật trạng thái.
 
-Nếu không còn neighbor nào tốt hơn → dừng lại tại cực trị cục bộ.
+    Nếu không còn neighbor nào tốt hơn → dừng lại tại cực trị cục bộ.
 
 2. Simulated Annealing
+
 ![demo-sa](gif/sa.gif)
 
 -- Lý  thuyết:
@@ -299,13 +307,13 @@ Hàm heuristic_conflict được tính theo tiêu chí: cứ 1 cặp cột trùn
 
 Trong mỗi vòng lặp:
 
-Sinh neighbor mới bằng cách thay đổi ngẫu nhiên vị trí của một quân.
+    Sinh neighbor mới bằng cách thay đổi ngẫu nhiên vị trí của một quân.
 
-Tính chênh lệch cost: Δ = new_cost - cur_cost.
+    Tính chênh lệch cost: Δ = new_cost - cur_cost.
 
-Nếu Δ ≤ 0 (tức là nghiệm mới tốt hơn) → chấp nhận ngay.
+    Nếu Δ ≤ 0 (tức là nghiệm mới tốt hơn) → chấp nhận ngay.
 
-Nếu Δ > 0 (tức là nghiệm tệ hơn), chấp nhận có xác suất P = e^(-Δ / T), cho phép “nhảy thoát” khỏi cực trị cục bộ.
+    Nếu Δ > 0 (tức là nghiệm tệ hơn), chấp nhận có xác suất P = e^(-Δ / T), cho phép “nhảy thoát” khỏi cực trị cục bộ.
 
 Sau mỗi bước, giảm nhiệt độ: T *= alpha.
 
@@ -314,6 +322,7 @@ Dừng lại khi T < T_min hoặc tìm thấy nghiệm thỏa mãn điều kiệ
 
 
 3. Beam Search
+
 ![demo-beam](gif/beam.gif)
 
 -- Lý  thuyết:
@@ -349,6 +358,7 @@ Khi đã mở rộng hết n hàng hoặc không còn candidate hợp lệ, ch�
 
 
 4. Genetic Algorithm
+
 ![demo-ga](gif/ga.gif)
 
 -- Lý  thuyết:
@@ -411,6 +421,7 @@ Kết thúc:
 IV. Nhóm thuật toán tìm kiếm theo ràng buộc
 
 1. Backtracking + Forward Checking
+
 ![demo-bfc](gif/bfc.gif)
 
 -- Lý thuyết
@@ -457,6 +468,7 @@ Kết thúc:
 
 
 2. AC-3 (Arc Consistency 3)
+
 ![demo-ac3](gif/ac3.gif)
 
 -- Lý thuyết
@@ -514,6 +526,7 @@ Giai Đoạn Backtracking Sau AC-3:
 V. Nhóm thuật toán tìm kiếm phân rã
 
 1. And-Or Search
+
 ![demo-ao](gif/ao.gif)
 
 --Lý thuyêt
@@ -571,6 +584,7 @@ Nếu không có kế hoạch nào dẫn đến goal → thông báo không tìm
 VI. Nhóm thuật toán tìm kiếm trong môi trường không quan sát được
 
 1. Belief Search
+
 ![demo-belief](gif/belief.gif)
 
 -- Lý thuyết
