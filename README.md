@@ -4,6 +4,7 @@
 I. Nhóm thuật toán tìm kiếm không có thông tin
 
 1. Breadth-First Search (BFS)
+
 ![demo-bfs](gif/bfs.gif)
 
 -- Lý  thuyết:
