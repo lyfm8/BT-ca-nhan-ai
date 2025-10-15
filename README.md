@@ -1,176 +1,205 @@
-* CÁC THUẬT TOÁN TÌM KIẾM TRONG AI
+# 🧠 CÁC THUẬT TOÁN TÌM KIẾM TRONG AI
 
+---
 
-I. Nhóm thuật toán tìm kiếm không có thông tin
+## I. Nhóm Thuật Toán Tìm Kiếm Không Có Thông Tin
 
-1. Breadth-First Search (BFS)
+---
+
+### **1. Breadth-First Search (BFS)**
 
 ![demo-bfs](gif/bfs.gif)
 
--- Lý  thuyết:
-* Khái niệm: tìm kiếm theo chiều rộng, duyệt từng mức của cây trạng thái từ gốc ra ngoài.  
-* Cách hoạt động:
-  - bắt đầu từ nút gốc, dùng hàng đợi để lưu các nút chờ mở rộng,
-  - lần lượt mở rộng tất cả nút ở độ sâu 0, rồi 1, rồi 2,... cho đến khi tìm được đích.  
-* Ưu điểm:
-  - tìm được lời giải ngắn nhất nếu chi phí các bước đi bằng nhau,
-  - đơn giản, trực quan.  
-* Nhược điểm:
-  - tốn nhiều bộ nhớ khi không gian trạng thái lớn.  
-* Độ phức tạp:
-  - thời gian: O(b^d)
-  - bộ nhớ: O(b^d)
-  - trong đó b là hệ số phân nhánh (branching factor), d là độ sâu của lời giải.
+#### **Lý thuyết**
 
--- Ứng dụng trong game đặt 8 quân xe:
+- **Khái niệm:**  
+  Tìm kiếm theo chiều rộng, duyệt từng mức của cây trạng thái từ gốc ra ngoài.
 
-*Hàm bfs_rooks() thực hiện thuật toán tìm kiếm theo chiều rộng (BFS).
+- **Cách hoạt động:**  
+  1. Bắt đầu từ nút gốc, dùng hàng đợi để lưu các nút chờ mở rộng.  
+  2. Lần lượt mở rộng tất cả nút ở độ sâu 0, rồi 1, rồi 2,... cho đến khi tìm được đích.
 
-*Cách hoạt động:
+- **Ưu điểm:**  
+  - Tìm được lời giải ngắn nhất nếu chi phí các bước đi bằng nhau.  
+  - Đơn giản, trực quan.
 
-Bắt đầu với hàng đợi chứa trạng thái rỗng [] (chưa đặt quân nào).
+- **Nhược điểm:**  
+  - Tốn nhiều bộ nhớ khi không gian trạng thái lớn.
 
-Mỗi vòng lặp: lấy một trạng thái ra khỏi hàng đợi, mở rộng nó bằng cách thêm 1 quân xe vào cột chưa dùng theo nguyên tắc LIFO
+- **Độ phức tạp:**  
+  - Thời gian: `O(b^d)`  
+  - Bộ nhớ: `O(b^d)`  
+  - Trong đó **b** là hệ số phân nhánh, **d** là độ sâu của lời giải.
 
-Mỗi trạng thái con được thêm vào hàng đợi để tiếp tục mở rộng sau.
+#### **Ứng dụng trong game đặt 8 quân xe**
 
-Khi trạng thái có đủ n quân xe (mỗi hàng một quân), thuật toán dừng và trả về nghiệm.
+- Hàm `bfs_rooks()` thực hiện thuật toán tìm kiếm theo chiều rộng (BFS).
 
-Nếu hàng đợi rỗng mà chưa tìm thấy nghiệm, kết thúc với thông báo thất bại.
+**Cách hoạt động:**
 
-2. Depth-First Search (DFS)
+- Bắt đầu với hàng đợi chứa trạng thái rỗng `[]` (chưa đặt quân nào).  
+- Mỗi vòng lặp: lấy một trạng thái ra khỏi hàng đợi, mở rộng nó bằng cách thêm 1 quân xe vào cột chưa dùng theo nguyên tắc **FIFO**.  
+- Mỗi trạng thái con được thêm vào hàng đợi để tiếp tục mở rộng sau.  
+- Khi trạng thái có đủ `n` quân xe (mỗi hàng một quân), thuật toán dừng và trả về nghiệm.  
+- Nếu hàng đợi rỗng mà chưa tìm thấy nghiệm → kết thúc với thông báo thất bại.
+
+---
+
+### **2. Depth-First Search (DFS)**
 
 ![demo-dfs](gif/dfs.gif)
 
--- Lý  thuyết:
-* Khái niệm: tìm kiếm theo chiều sâu, đi sâu vào một nhánh cho đến khi gặp đích hoặc bế tắc.  
-* Cách hoạt động:
-  - dùng ngăn xếp (hoặc đệ quy) để theo dõi đường đi hiện tại,
-  - mở rộng nút con đầu tiên liên tiếp; khi không thể mở rộng, quay lui (backtrack) lên nút cha.  
-* Ưu điểm:
-  - tốn ít bộ nhớ hơn BFS,
-  - có thể tìm lời giải nhanh khi nó nằm sâu nhưng ở nhánh đầu.  
-* Nhược điểm:
-  - không đảm bảo tìm lời giải tối ưu,
-  - có thể rơi vào vòng lặp nếu không kiểm soát.  
-* Độ phức tạp:
-  - thời gian: O(b^m)
-  - bộ nhớ: O(b * m)
-  - trong đó b là hệ số phân nhánh, m là độ sâu tối đa của cây.
+#### **Lý thuyết**
 
--- Ứng dụng trong game đặt 8 quân xe:
-*Hàm dfs_rooks() thực hiện thuật toán tìm kiếm theo chiều sâu (DFS)
+- **Khái niệm:**  
+  Tìm kiếm theo chiều sâu, đi sâu vào một nhánh cho đến khi gặp đích hoặc bế tắc.
 
-*Cách hoạt động:
+- **Cách hoạt động:**  
+  - Dùng ngăn xếp (hoặc đệ quy) để theo dõi đường đi hiện tại.  
+  - Mở rộng nút con đầu tiên liên tiếp; khi không thể mở rộng thì **quay lui (backtrack)** lên nút cha.
 
-Khởi tạo ngăn xếp chứa trạng thái rỗng [].
+- **Ưu điểm:**  
+  - Tốn ít bộ nhớ hơn BFS.  
+  - Có thể tìm lời giải nhanh khi nó nằm sâu nhưng ở nhánh đầu.
 
-Mỗi vòng lặp: lấy trạng thái ở đỉnh ngăn xếp ra (ưu tiên đi sâu nhất) theo nguyên tắc LIFO
+- **Nhược điểm:**  
+  - Không đảm bảo tìm lời giải tối ưu.  
+  - Có thể rơi vào vòng lặp nếu không kiểm soát.
 
-Nếu trạng thái có đủ n quân xe thì trả về nghiệm.
+- **Độ phức tạp:**  
+  - Thời gian: `O(b^m)`  
+  - Bộ nhớ: `O(b * m)`  
+  - Trong đó **b** là hệ số phân nhánh, **m** là độ sâu tối đa của cây.
 
-Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào cột chưa được dùng và đẩy chúng vào ngăn xếp.
+#### **Ứng dụng trong game đặt 8 quân xe**
 
-Tiếp tục cho đến khi ngăn xếp rỗng → không tìm thấy nghiệm hợp lệ.
+- Hàm `dfs_rooks()` thực hiện thuật toán tìm kiếm theo chiều sâu (DFS).
 
-3. Uniform Cost Search (UCS)
+**Cách hoạt động:**
+
+- Khởi tạo ngăn xếp chứa trạng thái rỗng `[]`.  
+- Mỗi vòng lặp: lấy trạng thái ở đỉnh ngăn xếp ra (ưu tiên đi sâu nhất) theo nguyên tắc **LIFO**.  
+- Nếu trạng thái có đủ `n` quân xe → trả về nghiệm.  
+- Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào cột chưa được dùng và đẩy chúng vào ngăn xếp.  
+- Tiếp tục cho đến khi ngăn xếp rỗng → không tìm thấy nghiệm hợp lệ.
+
+---
+
+### **3. Uniform Cost Search (UCS)**
 
 ![demo-ucs](gif/ucs.gif)
 
--- Lý  thuyết:
-* Khái niệm: tìm kiếm theo chi phí, luôn mở rộng nút có chi phí đường đi g(n) nhỏ nhất trước.  
-* Cách hoạt động:
-  - dùng hàng đợi ưu tiên (priority queue) sắp theo g(n),
-  - khi pop một nút đích từ hàng đợi, đảm bảo đó là đường đi chi phí nhỏ nhất.  
-* Ưu điểm:
-  - luôn tìm được nghiệm tối ưu nếu chi phí các bước là không âm.  
-* Nhược điểm:
-  - có thể tốn thời gian/bộ nhớ lớn nếu không có heuristic.  
-* Độ phức tạp:
-  - thời gian: O(b^(1 + ⌊C*/ε⌋))
-  - bộ nhớ: O(b^(1 + ⌊C*/ε⌋))
-  - trong đó b là hệ số phân nhánh, C* là chi phí của lời giải tối ưu, ε là kích thước bước chi phí nhỏ nhất (minimum step cost).
+#### **Lý thuyết**
 
--- Ứng dụng trong game đặt 8 quân xe - Hàm ucs_rooks():
-Bắt đầu với hàng đợi ưu tiên chứa trạng thái rỗng [] có chi phí 0.
+- **Khái niệm:**  
+  Tìm kiếm theo chi phí, luôn mở rộng nút có chi phí đường đi `g(n)` nhỏ nhất trước.
 
-Mỗi vòng lặp: lấy ra trạng thái có cost nhỏ nhất trong hàng đợi để mở rộng.
+- **Cách hoạt động:**  
+  - Dùng **hàng đợi ưu tiên (priority queue)** sắp theo `g(n)`.  
+  - Khi pop một nút đích từ hàng đợi, đảm bảo đó là đường đi chi phí nhỏ nhất.
 
-Nếu trạng thái có đủ n quân xe thì trả về nghiệm cùng tổng chi phí.
+- **Ưu điểm:**  
+  - Luôn tìm được nghiệm tối ưu nếu chi phí các bước là không âm.
 
-Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào cột chưa dùng, tính chi phí mới qua cost_function() rồi đưa vào hàng đợi ưu tiên.
+- **Nhược điểm:**  
+  - Có thể tốn thời gian/bộ nhớ lớn nếu không có heuristic.
 
-Lặp lại cho đến khi tìm thấy nghiệm tối ưu hoặc hàng đợi rỗng.
+- **Độ phức tạp:**  
+  - Thời gian: `O(b^(1 + ⌊C*/ε⌋))`  
+  - Bộ nhớ: `O(b^(1 + ⌊C*/ε⌋))`  
+  - Trong đó **b** là hệ số phân nhánh, **C*** là chi phí của lời giải tối ưu, **ε** là kích thước bước chi phí nhỏ nhất.
 
-4. Depth-Limited Search (DLS)
+#### **Ứng dụng trong game đặt 8 quân xe**
+
+- Hàm `ucs_rooks()` hoạt động như sau:
+
+  - Bắt đầu với hàng đợi ưu tiên chứa trạng thái rỗng `[]` có chi phí `0`.  
+  - Mỗi vòng lặp: lấy ra trạng thái có cost nhỏ nhất trong hàng đợi để mở rộng.  
+  - Nếu trạng thái có đủ `n` quân xe → trả về nghiệm cùng tổng chi phí.  
+  - Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào cột chưa dùng, tính chi phí mới qua `cost_function()` rồi đưa vào hàng đợi ưu tiên.  
+  - Lặp lại cho đến khi tìm thấy nghiệm tối ưu hoặc hàng đợi rỗng.
+
+---
+
+### **4. Depth-Limited Search (DLS)**
 
 ![demo-dls](gif/dls.gif)
 
--- Lý  thuyết:
-* Khái niệm: phiên bản của DFS với giới hạn độ sâu tối đa L.  
-* Cách hoạt động:
-  - thực hiện DFS nhưng không mở rộng các nút có độ sâu vượt quá L,
-  - nếu đến độ sâu L mà chưa tìm thấy đích thì trả về failure (hoặc cut-off).  
-* Ưu điểm:
-  - tránh vòng lặp vô hạn khi không có kiểm tra visited, kiểm soát bộ nhớ.  
-* Nhược điểm:
-  - có thể bỏ sót lời giải nếu nằm sâu hơn L.  
-* Độ phức tạp:
-  - thời gian: O(b^L)
-  - bộ nhớ: O(b * L)
-  - trong đó b là hệ số phân nhánh, L là độ sâu giới hạn.
+#### **Lý thuyết**
 
--- Ứng dụng trong game đặt 8 quân xe - Hàm dls_rooks(limit=8):
-Bắt đầu từ trạng thái rỗng [], gọi hàm đệ quy dls(state, depth) để mở rộng dần từng mức.
+- **Khái niệm:**  
+  Phiên bản của DFS với giới hạn độ sâu tối đa `L`.
 
-Ở mỗi bước:
+- **Cách hoạt động:**  
+  - Thực hiện DFS nhưng **không mở rộng** các nút có độ sâu vượt quá `L`.  
+  - Nếu đến độ sâu `L` mà chưa tìm thấy đích thì trả về **failure** (hoặc **cut-off**).
 
-Nếu trạng thái đủ n quân xe → trả về nghiệm.
+- **Ưu điểm:**  
+  - Tránh vòng lặp vô hạn khi không có kiểm tra visited.  
+  - Kiểm soát bộ nhớ.
 
-Nếu đạt độ sâu giới hạn limit → dừng mở rộng và quay lui.
+- **Nhược điểm:**  
+  - Có thể bỏ sót lời giải nếu nằm sâu hơn giới hạn `L`.
 
-Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào cột chưa dùng rồi gọi đệ quy tăng độ sâu lên 1.
+- **Độ phức tạp:**  
+  - Thời gian: `O(b^L)`  
+  - Bộ nhớ: `O(b * L)`  
+  - Trong đó **b** là hệ số phân nhánh, **L** là độ sâu giới hạn.
 
-Quá trình tiếp tục cho đến khi tìm được nghiệm hợp lệ hoặc toàn bộ nhánh đều bị cắt do đạt giới hạn độ sâu.
+#### **Ứng dụng trong game đặt 8 quân xe**
 
-5. Iterative Deepening (ID)
+- Hàm `dls_rooks(limit=8)` hoạt động như sau:
+
+  - Bắt đầu từ trạng thái rỗng `[]`, gọi hàm đệ quy `dls(state, depth)` để mở rộng dần từng mức.  
+  - Ở mỗi bước:  
+    - Nếu trạng thái đủ `n` quân xe → trả về nghiệm.  
+    - Nếu đạt độ sâu giới hạn `limit` → dừng mở rộng và quay lui.  
+    - Ngược lại, sinh các trạng thái con bằng cách thêm 1 quân xe vào cột chưa dùng rồi gọi đệ quy tăng độ sâu lên 1.  
+  - Quá trình tiếp tục cho đến khi tìm được nghiệm hợp lệ hoặc toàn bộ nhánh đều bị cắt do đạt giới hạn độ sâu.
+
+---
+
+### **5. Iterative Deepening (ID)**
 
 ![demo-id](gif/id.gif)
 
--- Lý  thuyết:
-* Khái niệm: kết hợp ưu điểm của BFS (tối ưu theo bước) và DFS (bộ nhớ thấp) bằng cách lặp DLS với L tăng dần từ 0 tới d.  
-* Cách hoạt động:
-  - thực hiện DLS với L = 0, rồi L = 1, rồi L = 2,... cho đến khi tìm thấy lời giải,
-  - mỗi lần lặp giống một DFS nhưng giới hạn sâu khác nhau.  
-* Ưu điểm:
-  - tìm được lời giải tối ưu như BFS nhưng chỉ dùng bộ nhớ như DFS.  
-* Nhược điểm:
-  - lặp lại nhiều lần các node ở các mức nông (tốn CPU).  
-* Độ phức tạp:
-  - thời gian: O(b^d)
-  - bộ nhớ: O(b * d)
-  - trong đó b là hệ số phân nhánh, d là độ sâu của lời giải.
+#### **Lý thuyết**
 
--- Ứng dụng trong game đặt 8 quân xe - Hàm id_rooks():
-id_rooks() là vòng điều khiển chính:
+- **Khái niệm:**  
+  Kết hợp ưu điểm của BFS (tối ưu theo bước) và DFS (bộ nhớ thấp) bằng cách lặp DLS với `L` tăng dần từ 0 tới `d`.
 
-Bắt đầu từ giới hạn độ sâu limit = 1, tăng dần tới n.
+- **Cách hoạt động:**  
+  - Thực hiện DLS với `L = 0`, rồi `L = 1`, rồi `L = 2`, ... cho đến khi tìm thấy lời giải.  
+  - Mỗi lần lặp giống một DFS nhưng giới hạn sâu khác nhau.
 
-Mỗi lần lặp sẽ gọi id_dfs_rooks(limit) để tìm nghiệm ở giới hạn đó.
+- **Ưu điểm:**  
+  - Tìm được lời giải tối ưu như BFS.  
+  - Chỉ dùng bộ nhớ như DFS.
 
-Nếu tìm thấy nghiệm, thuật toán dừng và trả về kết quả.
+- **Nhược điểm:**  
+  - Lặp lại nhiều lần các node ở các mức nông (tốn CPU).
 
-Nếu không, tiếp tục tăng giới hạn và thử lại.
+- **Độ phức tạp:**  
+  - Thời gian: `O(b^d)`  
+  - Bộ nhớ: `O(b * d)`  
+  - Trong đó **b** là hệ số phân nhánh, **d** là độ sâu của lời giải.
 
-id_dfs_rooks(limit) là bước tìm kiếm theo chiều sâu có giới hạn:
+#### **Ứng dụng trong game đặt 8 quân xe**
 
-Dùng ngăn xếp (stack) để duyệt theo DFS.
+- Hàm `id_rooks()` là vòng điều khiển chính:
 
-Mỗi trạng thái là danh sách vị trí quân xe đã đặt.
+  - Bắt đầu từ giới hạn độ sâu `limit = 1`, tăng dần tới `n`.  
+  - Mỗi lần lặp sẽ gọi `id_dfs_rooks(limit)` để tìm nghiệm ở giới hạn đó.  
+  - Nếu tìm thấy nghiệm → thuật toán dừng và trả về kết quả.  
+  - Nếu không → tiếp tục tăng giới hạn và thử lại.
 
-Khi đạt tới limit, thuật toán quay lui (backtrack).
+- Hàm `id_dfs_rooks(limit)` là bước tìm kiếm theo chiều sâu có giới hạn:
 
-Khi có đủ n quân, kiểm tra xem có khớp với trạng thái đích (goal_cols) bằng check_goal_state().
+  - Dùng **ngăn xếp (stack)** để duyệt theo DFS.  
+  - Mỗi trạng thái là danh sách vị trí quân xe đã đặt.  
+  - Khi đạt tới `limit`, thuật toán **quay lui (backtrack)**.  
+  - Khi có đủ `n` quân, kiểm tra xem có khớp với trạng thái đích (`goal_cols`) bằng `check_goal_state()`.
+
 
 II. Nhóm thuật toán tìm kiếm có thông tin
 
